@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <link rel="stylesheet" href="/mystyle.css" /> 
+  <title>Inicio</title>
+  <style>
+  .canje-section {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+
+  .canje-section h3 {
+    margin-top: 0;
+  }
+
+  .form-group-canje {
+    margin-bottom: 10px;
+  }
+
+  .form-group-canje label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+
+  .form-group-canje input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    box-sizing: border-box;
+  }
+
+  .canje-button {
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 1em;
+  }
+
+  .canje-button:hover {
+    background-color: #45a049;
+  }
+
+  #puntos-disponibles {
+    font-weight: bold;
+    color: #007bff;
+  }
+
+  #litros-canjeados {
+    font-weight: bold;
+    color: #28a745;
+  }
+
+  .cliente-info {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    background-color: #fefefe;
+  }
+</style>
+</head>
+<body>
+  <section class="menu">
+    <div class="home">
+      <div class="item">
+        <a href="#" class="link">
+          <span> OPCIONES </span>
+          <svg viewBox="0 0 360 360" xml:space="preserve">
+            <g id="SVGRepo_iconCarrier">
+              <path id="XMLID_225_" d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393 
+              c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393 
+              s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"></path>
+            </g>
+          </svg>
+        </a>
+        <div class="submenu">
+          <div class="submenu-item">
+            <a href="cliente.html" class="submenu-link"> HISTORIAL </a>
+          </div>
+          <div class="submenu-item">
+            <a href="/index.html" class="submenu-link"> SALIR </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <h1 class="titulo_seccion" id="welcome-title">Bienvenido Ciudadano</h1>
+    <div class="card">
+      <p class="time-text">
+        <span class="time" id="time"></span>
+        <span class="time-sub-text" id="period"></span>
+      </p>
+      <p class="day-text" id="day"></p>
+    </div>
+  </section>
+
+  <main class="contenido-principal">
+    <div class="mapa-contenedor">
+      <div id="map" style="height: 100%;"></div>
+    </div>
+
+    <aside class="lista-eventos">
+      <h3>Eventos Creados</h3>
+      <ul id="listaEventos"></ul>
+    </aside>
+    <section class="canje-section">
+  <h3>Canjear Puntos por Agua</h3>
+  <div class="cliente-info">
+    Puntos Disponibles: <span id="puntos-disponibles">Cargando...</span><br>
+    Litros de Agua Canjeados: <span id="litros-canjeados">Cargando...</span>
+  </div>
+  <form id="canjeForm">
+    <div class="form-group-canje">
+      <label for="puntosACanjear">Puntos a Canjear (múltiplos de 100):</label>
+      <input type="number" id="puntosACanjear" name="puntosACanjear" min="100" step="100">
+    </div>
+    <button type="button" class="canje-button" onclick="canjearPuntos()">Canjear</button>
+    <p id="mensaje-canje" style="margin-top: 10px;"></p>
+  </form>
+</section>
+  </main>
+
+  <footer class="footer">
+    <a href="https://github.com/SANTONXD/ARQUI_BLUEWAVE">
+      <img class="github" src="https://github.com/Thowers/Guia2TP/blob/main/IMAGENES/github.png?raw=true"
+        alt="logo de github" />GitHub
+    </a>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const res = await fetch('/eventos-cliente');
+      const eventos = await res.json();
+
+      const listaEventos = document.getElementById('listaEventos');
+      listaEventos.innerHTML = '';
+
+      const disponibles = eventos.filter(e => e.ya_participo === 0);
+      let participando = eventos.filter(e => e.ya_participo > 0);
+
+      // 🟩 Mostrar eventos disponibles
+      if (disponibles.length > 0) {
+        const titulo = document.createElement('h4');
+        titulo.textContent = 'Eventos Disponibles para Participar';
+        titulo.style.color = '#2185D5';
+        listaEventos.appendChild(titulo);
+
+        disponibles.forEach(evento => {
+          const fechaFormateada = new Date(evento.fecha).toLocaleDateString('es-CO', {
+            day: 'numeric', month: 'long', year: 'numeric'
+          });
+
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <strong>${evento.descripcion}</strong><br>
+            Fecha: ${fechaFormateada} - Hora: ${evento.hora}<br>
+            Estado: <strong>${evento.estado || 'No definido'}</strong><br>
+            ${evento.estado?.toLowerCase() !== 'cerrada'
+              ? `<button onclick="participarEnEvento(${evento.id_evento})">Participar</button>`
+              : `<span style="color: red;">Evento Cerrado</span>`}
+          `;
+          listaEventos.appendChild(li);
+        });
+      }
+
+      // ❌ Filtrar eventos cerrados en los que ya participa
+      participando = participando.filter(e => (e.estado || '').toLowerCase() !== 'cerrada');
+
+      // 🟡 Mostrar eventos participando (si quedan)
+      if (participando.length > 0) {
+        const titulo2 = document.createElement('h4');
+        titulo2.textContent = 'Eventos en los que ya estás participando';
+        titulo2.style.color = '#2185D5';
+        titulo2.style.marginTop = '1rem';
+        listaEventos.appendChild(titulo2);
+
+        participando.forEach(evento => {
+          const fechaFormateada = new Date(evento.fecha).toLocaleDateString('es-CO', {
+            day: 'numeric', month: 'long', year: 'numeric'
+          });
+
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <strong>${evento.descripcion}</strong><br>
+            Fecha: ${fechaFormateada} - Hora: ${evento.hora}<br>
+            Estado: <strong>${evento.estado || 'No definido'}</strong><br>
+            <em style="color: gray;">Ya estás participando</em>
+          `;
+          listaEventos.appendChild(li);
+        });
+      }
+    });
+
+    async function participarEnEvento(idEvento) {
+      const confirmacion = confirm('¿Deseas participar en este evento?');
+      if (!confirmacion) return;
+
+      try {
+        const res = await fetch('/participar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id_evento: idEvento })
+        });
+
+        const mensaje = await res.text();
+        alert(mensaje);
+        location.reload();
+      } catch (err) {
+        alert('Error al participar en el evento');
+        console.error(err);
+      }
+    }
+  </script>
+<script>
+  async function canjearPuntos() {
+    const puntosInput = document.getElementById('puntosACanjear');
+    const mensaje = document.getElementById('mensaje-canje');
+    const puntosACanjear = parseInt(puntosInput.value, 10);
+
+    mensaje.textContent = ''; // Limpiar mensaje anterior
+
+    if (isNaN(puntosACanjear) || puntosACanjear < 100 || puntosACanjear % 100 !== 0) {
+      mensaje.textContent = 'Ingresa una cantidad válida (mínimo 100, múltiplos de 100)';
+      mensaje.style.color = 'red';
+      return;
+    }
+
+    try {
+      const res = await fetch('/canjear-puntos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ puntosACanjear })
+      });
+
+      const text = await res.text();
+      mensaje.textContent = text;
+      mensaje.style.color = res.ok ? 'green' : 'red';
+
+      if (res.ok) {
+        // Actualizar datos del cliente
+        const datos = await fetch('/cliente/datos').then(r => r.json());
+        document.getElementById('puntos-disponibles').textContent = datos.totalPuntos;
+        document.getElementById('litros-canjeados').textContent = datos.totalLitrosCanjeados;
+      }
+
+    } catch (err) {
+      console.error(err);
+      mensaje.textContent = 'Error al conectar con el servidor';
+      mensaje.style.color = 'red';
+    }
+  }
+
+  // Al cargar la página, traer datos del cliente
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const datos = await fetch('/cliente/datos').then(r => r.json());
+      document.getElementById('puntos-disponibles').textContent = datos.totalPuntos;
+      document.getElementById('litros-canjeados').textContent = datos.totalLitrosCanjeados;
+    } catch (err) {
+      console.error(err);
+    }
+  });
+</script>
+
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script src="logicamapa.js"></script>
+</body>
+</html>

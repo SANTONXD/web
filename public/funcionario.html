@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <!-- DataTables CSS y JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script><!-- Toastify CSS y JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <link rel="stylesheet" href="/mystyle.css" /> 
+  <title>Inicio</title>
+</head>
+<body>
+  <section class="menu">
+    <!-- Menu -->
+    <div class="home">
+      <div class="item">
+        <a href="#" class="link">
+          <span> OPCIONES </span>
+          <svg viewBox="0 0 360 360" xml:space="preserve">
+            <g id="SVGRepo_iconCarrier">
+              <path
+                id="XMLID_225_"
+                d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393 c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393 s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"
+              ></path>
+            </g>
+          </svg>
+        </a>
+        <div class="submenu">
+          <div class="submenu-item">
+            <a href="principal-funcionario.html" class="submenu-link"> ATRAS </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <h1 class="titulo_seccion" id="welcome-title">Bienvenido Empleado</h1>
+        <div class="card">
+      <p class="time-text">
+        <span class="time" id="time"></span>
+        <span class="time-sub-text" id="period"></span>
+      </p>
+      <p class="day-text" id="day"></p>
+      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16" stroke-width="0"
+        fill="currentColor" stroke="currentColor" class="moon">
+        <path
+          d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z">
+        </path>
+        <path
+          d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z">
+        </path>
+      </svg>
+    </div>
+  </section>
+
+<main class="contenido-principal">
+  <!-- Mapa -->
+  <div class="mapa-contenedor">
+    <div id="map" style="height: 100%;"></div>
+  </div>
+
+  <!-- Lista de eventos -->
+  <aside class="lista-participacion">
+    <section class="participacion-usuarios">
+      <h3>Tabla de Participaciones</h3>
+<table id="tablaParticipaciones">
+  <thead>
+    <tr>
+      <th>Evento</th>
+      <th>Fecha</th>
+      <th>Hora</th>
+      <th>Usuario</th>
+      <th>Puntos</th>
+      <th>Asignar Puntos</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+      <ul id="listaparticipacion"></ul>
+    </section>    
+  </aside>
+</main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <a href="https://github.com/SANTONXD/ARQUI_BLUEWAVE">
+      <img class="github" src="https://github.com/Thowers/Guia2TP/blob/main/IMAGENES/github.png?raw=true"
+        alt="logo de github" />GitHub
+    </a>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+
+function formatearHora(horaStr) {
+  const [hora, minutos] = horaStr.split(':');
+  return `${hora}:${minutos}`;
+}
+
+
+ function formatearFecha(fechaStr) {
+  const fecha = new Date(fechaStr);
+  const dia = String(fecha.getDate()).padStart(2, '0');
+  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+  const anio = fecha.getFullYear();
+  return `${dia}/${mes}/${anio}`;
+}
+
+function formatearHora(horaStr) {
+  const [hora, minutos] = horaStr.split(':');
+  return `${hora}:${minutos}`;
+}
+
+async function cargarParticipaciones() {
+  const res = await fetch('/participaciones');
+  const participaciones = await res.json();
+
+  // Destruir si ya está inicializado
+  if ($.fn.DataTable.isDataTable('#tablaParticipaciones')) {
+    $('#tablaParticipaciones').DataTable().clear().destroy();
+  }
+
+  const tbody = document.querySelector('#tablaParticipaciones tbody');
+  tbody.innerHTML = ''; // limpiar tabla
+
+  participaciones.forEach(p => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${p.evento}</td>
+      <td>${formatearFecha(p.fecha_participacion)}</td>
+      <td>${formatearHora(p.hora)}</td>
+      <td>${p.nombre_cliente}</td>
+      <td>${p.puntos_otorgados}</td>
+      <td>
+        <input type="number" min="0" value="${p.puntos_otorgados}" id="puntos-${p.id_participacion}">
+        <button onclick="asignarPuntos(${p.id_participacion})">Asignar</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Volver a inicializar DataTable después de rellenar la tabla
+  $('#tablaParticipaciones').DataTable({
+    paging: false, // 👈 Esto desactiva la paginación
+    language: {
+      url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+    },
+    columnDefs: [
+      { orderable: false, targets: 5 },
+      { searchable: false, targets: 5 }
+    ]
+  });
+}
+
+    
+async function asignarPuntos(id_participacion) {
+  const input = document.getElementById(`puntos-${id_participacion}`);
+  const puntos = parseInt(input.value);
+
+  const res = await fetch('/asignar-puntos', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id_participacion, puntos })
+  });
+
+  if (res.ok) {
+    Toastify({
+      text: "✅ Puntos actualizados correctamente",
+      duration: 3000,
+      gravity: "top",
+      position: "center",
+      backgroundColor: "#22c55e"
+    }).showToast();
+    cargarParticipaciones(); // Recargar tabla
+  } else {
+    const msg = await res.text();
+    Toastify({
+      text: "❌ Error: " + msg,
+      duration: 3000,
+      gravity: "top",
+      position: "center",
+      backgroundColor: "#ef4444"
+    }).showToast();
+  }
+}
+    
+    document.addEventListener('DOMContentLoaded', cargarParticipaciones);
+    
+    </script>    
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script src="logicamapa.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inicio</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <link rel="stylesheet" href="/mystyle.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+main.contenido-principal {
+  display: flex;
+  flex-grow: 1; /* 👈 CLAVE para empujar el footer abajo */
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px;
+  margin-top: 120px;
+  align-items: flex-start;
+}
+
+
+.mapa-y-tabla {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-height: 100%;
+}
+
+.mapa-contenedor-admin {
+  width: 100%;
+  height: 300px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  min-height: 400px;
+  flex-grow: 1;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+  background-color: #e5e5e5;
+}
+
+    .evento-formulario {
+      flex: 1;
+      background-color: #f7f7f7;
+      padding: 20px;
+      border-radius: 10px;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .evento-formulario h3 {
+      margin-top: 0;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    button {
+      padding: 10px 15px;
+      background-color: #2185D5;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #1664a8;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    table thead {
+      background-color: #2185D5;
+      color: white;
+    }
+
+    table th,
+    table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ccc;
+    }
+
+    table td button {
+      margin-right: 5px;
+      font-size: 0.9rem;
+      padding: 6px 10px;
+    }
+
+    .titulo_seccion {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-top: 1rem;
+    }
+
+    .footer {
+      background-color: #2185D5;
+      padding: 10px;
+      text-align: center;
+      color: white;
+      margin-top: 40px;
+    }
+
+    .footer a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <section class="menu">
+        <div class="home">
+            <div class="item">
+              <a href="#" class="link">
+                <span> OPCIONES </span>
+                <svg viewBox="0 0 360 360" xml:space="preserve">
+                  <g id="SVGRepo_iconCarrier">
+                    <path
+                      id="XMLID_225_"
+                      d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393 c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393 s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"
+                    ></path>
+                  </g>
+                </svg>
+              </a>
+              <div class="submenu">
+                <div class="submenu-item">
+                    <a href="principal-admin.html" class="submenu-link"> ATRAS </a>
+                </div>
+                <div class="submenu-item">
+                </div>
+              </div>
+            </div>
+          </div>
+          <h1 class="titulo_seccion" id="welcome-title">Bienvenido Administrador</h1>
+              <div class="card">
+            <p class="time-text">
+              <span class="time" id="time"></span>
+              <span class="time-sub-text" id="period"></span>
+            </p>
+            <p class="day-text" id="day"></p>
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16" stroke-width="0"
+              fill="currentColor" stroke="currentColor" class="moon">
+              <path
+                d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z">
+              </path>
+              <path
+                d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z">
+              </path>
+            </svg>
+          </div>
+        </section>
+
+  <h1 class="titulo_seccion">Administración de Eventos</h1>
+
+  <main class="contenido-administrador">
+    <div class="mapa-y-tabla">
+      <div class="mapa-contenedor-admin">
+        <div id="map"></div>
+      </div>
+
+      <table id="tabla-eventos">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Descripción</th>
+            <th>Latitud</th>
+            <th>Longitud</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <section class="evento-formulario">
+      <h3>Crear/Editar Evento</h3>
+      <form id="eventoForm">
+        <input type="hidden" name="id_evento" id="id_evento" />
+        <div class="form-group">
+          <label for="fecha">Fecha:</label>
+          <input type="date" id="fecha" name="fecha" required />
+        </div>
+        <div class="form-group">
+          <label for="hora">Hora:</label>
+          <input type="time" id="hora" name="hora" required />
+        </div>
+        <div class="form-group">
+          <label for="descripcion">Descripción:</label>
+          <textarea id="descripcion" name="descripcion" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="latitud">Latitud:</label>
+          <input type="text" id="latitud" name="latitud" readonly />
+        </div>
+        <div class="form-group">
+          <label for="longitud">Longitud:</label>
+          <input type="text" id="longitud" name="longitud" readonly />
+        </div>
+        <div class="form-group">
+            <label for="estado">Estado:</label>
+            <select id="estado" name="estado" required>
+              <option value="Iniciado">Iniciado</option>
+              <option value="En curso">En curso</option>
+              <option value="Cerrada">Cerrada</option>
+            </select>
+          </div>          
+        <button type="submit">Guardar Evento</button>
+        <button type="button" id="cancelarFormulario">Cancelar</button>
+      </form>
+    </section>
+  </main>
+
+<footer class="footer">
+  <a href="https://github.com/SANTONXD/ARQUI_BLUEWAVE" target="_blank" rel="noopener noreferrer">
+    <img class="github" src="https://github.com/Thowers/Guia2TP/blob/main/IMAGENES/github.png?raw=true" alt="logo de GitHub">
+    GitHub del proyecto
+  </a>
+</footer>
+</div>
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <!-- El head y estilos se mantienen igual... -->
+<!-- Pega este <script> dentro de <body> o justo antes de </body> -->
+    <script>
+        window.onload = () => {
+          const eventoForm = document.getElementById('eventoForm');
+          const cancelarFormularioBtn = document.getElementById('cancelarFormulario');
+          const tablaEventosBody = document.querySelector('#tabla-eventos tbody');
+          const latitudInput = document.getElementById('latitud');
+          const longitudInput = document.getElementById('longitud');
+      
+          let mapa, marcadorSeleccionado;
+          let marcadoresCargados = [];
+      
+          function initMap() {
+            mapa = L.map('map').setView([10.4170, -75.5450], 12.5);
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(mapa);
+      
+            mapa.on('click', function (e) {
+              if (marcadorSeleccionado) {
+                mapa.removeLayer(marcadorSeleccionado);
+              }
+              marcadorSeleccionado = L.marker([e.latlng.lat, e.latlng.lng]).addTo(mapa);
+              latitudInput.value = e.latlng.lat;
+              longitudInput.value = e.latlng.lng;
+            });
+          }
+      
+function mostrarEventosEnMapa(eventos) {
+  marcadoresCargados.forEach(m => mapa.removeLayer(m));
+  marcadoresCargados = [];
+
+  eventos.forEach(evento => {
+    const marcador = L.marker([evento.latitud, evento.longitud]).addTo(mapa);
+    const fechaFormateada = new Date(evento.fecha).toLocaleDateString("es-CO", {
+      day: 'numeric', month: 'long', year: 'numeric'
+    });
+    const horaFormateada = evento.hora?.slice(0, 5) || '00:00';
+
+    marcador.bindPopup(`
+      <strong>${fechaFormateada} ${horaFormateada}</strong><br>
+      ${evento.descripcion}
+    `);
+    marcadoresCargados.push(marcador);
+  });
+
+  // 👇 Esta línea es la clave para que el mapa se reacomode
+  setTimeout(() => mapa.invalidateSize(), 100);
+}
+
+      
+          function cargarEventos() {
+            fetch('/eventos')
+              .then(res => res.json())
+              .then(eventos => {
+                tablaEventosBody.innerHTML = '';
+                if (!eventos.length) {
+                  tablaEventosBody.innerHTML = '<tr><td colspan="7">No hay eventos</td></tr>';
+                  return;
+                }
+      
+                eventos.forEach(ev => {
+                  const row = document.createElement('tr');
+                  row.innerHTML = `
+                    <td>${ev.fecha}</td>
+                    <td>${ev.hora}</td>
+                    <td>${ev.descripcion}</td>
+                    <td>${ev.latitud}</td>
+                    <td>${ev.longitud}</td>
+                    <td>${ev.estado || 'Iniciado'}</td>
+                    <td>
+                      <button onclick='editarEvento(${JSON.stringify(ev)})'>Editar</button>
+                      <button onclick='eliminarEvento(${ev.id_evento})'>Eliminar</button>
+                    </td>`;
+                  tablaEventosBody.appendChild(row);
+                });
+      
+                mostrarEventosEnMapa(eventos);
+              })
+              .catch(err => console.error('Error al cargar eventos:', err));
+          }
+      
+          window.editarEvento = function (ev) {
+            document.getElementById('id_evento').value = ev.id_evento;
+            document.getElementById('fecha').value = ev.fecha;
+            document.getElementById('hora').value = ev.hora;
+            document.getElementById('descripcion').value = ev.descripcion;
+            document.getElementById('estado').value = ev.estado || 'Iniciado';
+            latitudInput.value = ev.latitud;
+            longitudInput.value = ev.longitud;
+          };
+      
+          window.eliminarEvento = function (id) {
+            if (!confirm('¿Eliminar evento?')) return;
+            fetch(`/admin/eventos/${id}`, { method: 'DELETE' })
+              .then(res => {
+                if (res.ok) {
+                  cargarEventos();
+                  alert('Evento eliminado correctamente');
+                } else {
+                  alert('Error al eliminar evento');
+                }
+              });
+          };
+      
+          eventoForm.onsubmit = function (e) {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(this));
+            const method = data.id_evento ? 'PUT' : 'POST';
+            const url = data.id_evento ? `/admin/eventos/${data.id_evento}` : '/evento';
+      
+            fetch(url, {
+              method,
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
+            })
+              .then(res => {
+                if (res.ok) {
+                  cargarEventos();
+                  eventoForm.reset();
+                  alert('Evento guardado correctamente');
+                } else {
+                  return res.text().then(msg => Promise.reject(msg));
+                }
+              })
+              .catch(error => {
+                alert('Error al guardar evento: ' + error);
+                console.error(error);
+              });
+          };
+      
+          cancelarFormularioBtn.onclick = () => eventoForm.reset();
+      
+          initMap();
+          cargarEventos();
+        };
+      </script>
+      <script>
+        function actualizarReloj() {
+          const ahora = new Date();
+          let horas = ahora.getHours();
+          const minutos = ahora.getMinutes().toString().padStart(2, '0');
+          const ampm = horas >= 12 ? 'PM' : 'AM';
+          const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      
+          horas = horas % 12 || 12; // Convierte a formato 12 horas
+      
+          document.getElementById('time').textContent = `${horas}:${minutos}`;
+          document.getElementById('period').textContent = ampm;
+          document.getElementById('day').textContent = dias[ahora.getDay()];
+        }
+      
+        setInterval(actualizarReloj, 1000);
+        actualizarReloj(); // Ejecuta de inmediato
+      </script>      
+</body>
+</html>

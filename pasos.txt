@@ -1,0 +1,3 @@
+instalar node
+instalar dependencias npm install express mysql2 bcrypt express-session
+node logica.js

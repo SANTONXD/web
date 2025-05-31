@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/mystyle.css" />
+  <title>Historial de Participación</title>
+</head>
+<body>
+  <section class="menu">
+    <div class="home">
+      <div class="item">
+        <a href="#" class="link">
+          <span> OPCIONES </span>
+          <svg viewBox="0 0 360 360" xml:space="preserve">
+            <g id="SVGRepo_iconCarrier">
+              <path id="XMLID_225_" d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393 
+              c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393 
+              s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"></path>
+            </g>
+          </svg>
+        </a>
+        <div class="submenu">
+          <div class="submenu-item">
+            <a href="principal-cliente.html" class="submenu-link"> ATRAS </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <h1 class="titulo_seccion" id="welcome-title">Historial de Participación</h1>
+    <div class="card">
+      <p class="time-text">
+        <span class="time" id="time"></span>
+        <span class="time-sub-text" id="period"></span>
+      </p>
+      <p class="day-text" id="day"></p>
+    </div>
+  </section>
+
+  <main class="contenido-principal">
+    <!-- 📄 Sección con tabla estilizada -->
+    <section class="seccion-participaciones" style="width: 100%; margin: auto; background: var(--fondo); padding: 2rem; border-radius: 12px;">
+      <h3 style="text-align: center; color: var(--tercer-color); font-size: 1.5rem; margin-bottom: 1rem;">
+        Eventos en los que has participado
+      </h3>
+
+<!-- 🔢 Tarjeta de puntos acumulados centrada -->
+<div style="display: flex; justify-content: center; margin-bottom: 1rem;">
+  <div class="card" style="width: 280px; padding: 1rem; text-align: center;">
+    <p style="font-size: 18px; color: white; margin: 0;">Puntos Totales Acumulados</p>
+    <p id="totalPuntos" style="font-size: 32px; font-weight: bold; color: #fff; margin: 0;">0</p>
+  </div>
+</div>
+
+
+      <div style="overflow-x: auto;">
+        <table id="tablaParticipaciones">
+          <thead>
+            <tr>
+              <th>Descripción</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Puntos Otorgados</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <a href="https://github.com/SANTONXD/ARQUI_BLUEWAVE">
+      <img class="github" src="https://github.com/Thowers/Guia2TP/blob/main/IMAGENES/github.png?raw=true"
+        alt="logo de github" />GitHub
+    </a>
+  </footer>
+
+  <script>
+    // Reloj
+    function updateTime() {
+      const now = new Date();
+      let hours = now.getHours();
+      let minutes = now.getMinutes();
+      const period = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12 || 12;
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      document.getElementById("time").textContent = `${hours}:${minutes}`;
+      document.getElementById("period").textContent = period;
+
+      const days = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+      const dayOfWeek = days[now.getDay()];
+      const day = now.getDate();
+      const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sept", "Oct", "Nov", "Dic"];
+      const month = months[now.getMonth()];
+      document.getElementById("day").textContent = `${dayOfWeek}, ${month} ${day}`;
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    // Cargar participaciones y puntos totales
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        // Participaciones
+        const res = await fetch('/mis-participaciones');
+        const datos = await res.json();
+        const cuerpoTabla = document.querySelector('#tablaParticipaciones tbody');
+
+        datos.forEach(p => {
+          const fecha = new Date(p.fecha_participacion).toLocaleDateString('es-CO', {
+            day: 'numeric', month: 'long', year: 'numeric'
+          });
+
+          const fila = document.createElement('tr');
+          fila.innerHTML = `
+            <td>${p.evento}</td>
+            <td>${fecha}</td>
+            <td>${p.hora}</td>
+            <td>${p.puntos_otorgados || 0}</td>
+            <td>${p.estado || 'Sin estado'}</td>
+          `;
+          cuerpoTabla.appendChild(fila);
+        });
+
+        // Puntos totales
+        const puntosRes = await fetch('/puntos-totales');
+        const puntosData = await puntosRes.json();
+        document.getElementById('totalPuntos').textContent = puntosData.total;
+
+      } catch (error) {
+        console.error('Error al cargar participaciones o puntos:', error);
+      }
+    });
+  </script>
+</body>
+</html>
